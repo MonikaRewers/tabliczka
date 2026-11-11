@@ -11,11 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="Tabliczka">
 <meta name="description" content="Nauka tabliczki mnożenia i dzielenia dla dzieci 6–12 lat.">
 <title>Wycinankowa Tabliczka</title>
-<meta name="theme-color" content="#0f7b4a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Chakra+Petch:wght@600;700&family=Nunito:wght@600;800&display=swap">
 <style>
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 
 /* Layout: one-screen app built from layered cut paper; folk paper-cut (wycinanka) rosettes as rewards. */
 :root{
@@ -41,12 +39,12 @@ body[data-style="mistrz"] .mode b{text-transform:uppercase;letter-spacing:.04em;
 body[data-style="mistrz"] .pop .praise{transform:skewX(-8deg);text-transform:uppercase;letter-spacing:.06em;color:var(--yellow)}
 body[data-style="mistrz"] .scallop{display:none}
 .rank{display:inline-block;margin-top:2px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow);font-family:var(--body)}
-html,body{height:100%}
+html,body{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-weight:600;
   background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.08) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.06) 0 2px,transparent 3px);
   background-size:38px 38px,52px 52px;overflow-x:hidden}
-#app{max-width:520px;margin:0 auto;min-height:100%;box-sizing:border-box;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 28px;
+#app{max-width:520px;margin:0 auto;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:max(14px,env(safe-area-inset-top,0px)) max(28px,env(safe-area-inset-bottom,0px));
   display:flex;flex-direction:column;gap:14px}
 h1,h2,h3{font-family:var(--display);margin:0;line-height:1.05;text-wrap:balance}
 button{font:inherit;cursor:pointer;border:0;color:inherit}
