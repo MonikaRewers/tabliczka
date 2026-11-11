@@ -471,7 +471,7 @@ function isStandalone(){return (window.matchMedia&&matchMedia("(display-mode: st
 function install(){
   if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null});return}
   const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-  const steps=ios?[["1","Otwórz tę stronę w <b>Safari</b>."],["2","Stuknij przycisk <b>Udostępnij</b> (kwadrat ze strzałką w górę) na dole ekranu."],["3","Przewiń w dół i wybierz <b>Do ekranu początkowego</b>."],["4","Stuknij <b>Dodaj</b>. Ikona Tabliczki pojawi się na ekranie."]]
+  const steps=ios?[["1","Otwórz tę stronę w <b>Safari</b>."],["2","Stuknij <b>☰</b> (trzy kreski) obok adresu strony na dole ekranu, a potem <b>Udostępnij</b>. W starszych iPhone'ach przycisk Udostępnij (kwadrat ze strzałką) jest od razu na dole."],["3","Przewiń w dół i wybierz <b>Do ekranu początkowego</b>."],["4","Stuknij <b>Dodaj</b>. Ikona Tabliczki pojawi się na ekranie."]]
    :[["1","Otwórz tę stronę w <b>Chrome</b>."],["2","Stuknij <b>⋮</b> (trzy kropki) w prawym górnym rogu."],["3","Wybierz <b>Zainstaluj aplikację</b> albo <b>Dodaj do ekranu głównego</b>."],["4","Potwierdź. Ikona Tabliczki pojawi się na ekranie."]];
   app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Ikona na ekranie</h1></div>
   <div class="sheet" style="display:flex;flex-direction:column;gap:14px">
