@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tabliczka">
+<meta name="description" content="Nauka tabliczki mnożenia i dzielenia dla dzieci 6–12 lat.">
+<title>Wycinankowa Tabliczka</title>
+<meta name="theme-color" content="#0f7b4a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Chakra+Petch:wght@600;700&family=Nunito:wght@600;800&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* Layout: one-screen app built from layered cut paper; folk paper-cut (wycinanka) rosettes as rewards. */
+:root{
+  --paper:#0f7b4a;      /* ground: deep folk green paper */
+  --sheet:#fffaf0;      /* card paper */
+  --ink:#1d1b2e;
+  --red:#e8293f; --pink:#ff4fa3; --yellow:#ffc928; --blue:#2f6cf6; --violet:#7b3fe4; --orange:#ff7a1a; --mint:#22c58b;
+  --shadow:#0a4f30;
+  --muted:#6b6880;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --r:22px;
+  color-scheme:light;
+}
+body[data-style="mistrz"]{
+  --paper:#16163a; --sheet:#232352; --ink:#f4f2ff; --shadow:#07071c; --muted:#a9a6d6;
+  --r:12px;
+  --display:"Chakra Petch","Trebuchet MS",system-ui,sans-serif;
+  --red:#ff3860; --blue:#3d7bff; --violet:#9b5cff; --orange:#ff8a1f;
+}
+body[data-style="mistrz"] .mode{background-image:linear-gradient(135deg,rgba(255,255,255,.18),transparent 55%);box-shadow:0 0 0 2px rgba(255,255,255,.14) inset,0 6px 0 var(--shadow)}
+body[data-style="mistrz"] .mode b{text-transform:uppercase;letter-spacing:.04em;font-size:1.15rem}
+body[data-style="mistrz"] .pop .praise{transform:skewX(-8deg);text-transform:uppercase;letter-spacing:.06em;color:var(--yellow)}
+body[data-style="mistrz"] .scallop{display:none}
+.rank{display:inline-block;margin-top:2px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--yellow);font-family:var(--body)}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-weight:600;
+  background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.08) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.06) 0 2px,transparent 3px);
+  background-size:38px 38px,52px 52px;overflow-x:hidden}
+#app{max-width:520px;margin:0 auto;min-height:100%;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 28px;
+  display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.05;text-wrap:balance}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+button:focus-visible,input:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+
+/* cut-paper card: hard offset shadow + scalloped top edge */
+.sheet{background:var(--sheet);border-radius:var(--r);box-shadow:0 6px 0 var(--shadow);padding:16px;position:relative}
+.scallop{--c:var(--sheet);height:14px;margin:-14px 0 0;background:radial-gradient(circle at 10px 14px,var(--c) 9px,transparent 10px) 0 0/20px 14px repeat-x}
+.top{display:flex;align-items:center;gap:10px;color:#fff}
+.top h1{font-size:1.6rem;flex:1}
+.top .who{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.18);border-radius:999px;padding:4px 12px 4px 4px;font-weight:800}
+.back{background:rgba(0,0,0,.2);color:#fff;border-radius:999px;width:44px;height:44px;font-size:1.4rem}
+
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mode{border-radius:var(--r);padding:16px 12px 14px;color:#fff;text-align:left;box-shadow:0 6px 0 var(--shadow);position:relative;overflow:hidden;min-height:128px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;transition:transform .12s}
+.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--shadow)}
+.mode b{font-family:var(--display);font-size:1.35rem;line-height:1}
+.mode small{opacity:.92;font-size:.85rem}
+.mode .sym{position:absolute;top:-10px;right:-4px;font-family:var(--display);font-size:5.2rem;opacity:.28;font-weight:800}
+.extras{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.extra{background:var(--sheet);border-radius:var(--r);box-shadow:0 5px 0 var(--shadow);padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:.9rem}
+.extra svg{width:46px;height:46px}
+
+/* game */
+.hud{display:flex;gap:8px;align-items:center;color:#fff;font-weight:800}
+.pill{background:rgba(0,0,0,.22);border-radius:999px;padding:6px 12px;font-variant-numeric:tabular-nums}
+.progress{flex:1;height:12px;background:rgba(0,0,0,.22);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--yellow);border-radius:99px;transition:width .3s}
+.q{text-align:center;padding:26px 10px 18px}
+.q .expr{font-family:var(--display);font-size:clamp(2.8rem,14vw,4.4rem);font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.q .ans{display:inline-block;min-width:2.2ch;border-bottom:6px dashed var(--pink);color:var(--pink)}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.key{background:var(--sheet);border-radius:calc(var(--r) - 4px);box-shadow:0 5px 0 var(--shadow);font-family:var(--display);font-size:1.9rem;font-weight:800;height:62px;font-variant-numeric:tabular-nums}
+.key:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+.key.ok{background:var(--yellow);color:#1d1b2e}
+.key.del{background:var(--pink);color:#fff}
+
+/* feedback overlay */
+.pop{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:20}
+.pop .card{display:flex;flex-direction:column;align-items:center;gap:6px;animation:pop .55s cubic-bezier(.2,1.6,.4,1)}
+.pop .praise{font-family:var(--display);font-size:2.4rem;font-weight:800;color:#fff;text-shadow:0 4px 0 var(--shadow);transform:rotate(-4deg)}
+.rosette{width:170px;height:170px;position:relative;display:grid;place-items:center}
+.rosette svg{position:absolute;inset:0;width:100%;height:100%;animation:spin 6s linear infinite}
+.rosette .animal{font-size:4.2rem;position:relative;animation:hop .9s ease-in-out infinite}
+@keyframes pop{from{transform:scale(.2) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px) rotate(6deg)}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .4s}
+
+/* fact family triangle */
+.family{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.family svg{width:200px;height:170px}
+.family p{margin:0;font-size:1.15rem;line-height:1.4}
+.big{width:100%;border-radius:var(--r);padding:16px;font-family:var(--display);font-size:1.4rem;font-weight:800;background:var(--yellow);color:#1d1b2e;box-shadow:0 6px 0 var(--shadow)}
+.big:active{transform:translateY(4px);box-shadow:0 2px 0 var(--shadow)}
+.big.alt{background:var(--sheet);color:var(--ink)}
+
+/* results */
+.result{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.score{font-family:var(--display);font-size:3.6rem;font-weight:800;color:var(--pink);font-variant-numeric:tabular-nums}
+.record{background:var(--yellow);color:#1d1b2e;border-radius:999px;padding:6px 16px;font-weight:800;transform:rotate(-3deg)}
+
+/* zoo */
+.zoo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.slot{aspect-ratio:1;max-width:100%;position:relative;display:grid;place-items:center}
+.slot svg{position:absolute;inset:0;width:100%;height:100%}
+.slot span{position:relative;font-size:1.9rem}
+.slot.locked span{filter:brightness(0) opacity(.35);font-size:1.6rem}
+
+/* mastery map */
+.mapwrap{overflow-x:auto}
+.map{display:grid;grid-template-columns:20px repeat(10,minmax(0,1fr));gap:2px;font-variant-numeric:tabular-nums}
+.map div{aspect-ratio:1;display:grid;place-items:center;border-radius:6px;font-size:.66rem;font-weight:800;min-width:0}
+.map .h{color:var(--muted);font-family:var(--display);font-size:.9rem}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:4px}
+.lv0{background:rgba(127,127,160,.18);color:var(--muted)} .lv1{background:#ff8a9a;color:#5a0010} .lv2{background:#ffb36b;color:#5a2a00}
+.lv3{background:#ffe066;color:#4d3b00} .lv4{background:#5fdca8;color:#003d26} .lv5{background:linear-gradient(135deg,#ffd23f,#ffb000);color:#4d2f00;box-shadow:inset 0 0 0 2px #fff6}
+
+/* records */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--sheet);border-radius:var(--r);box-shadow:0 5px 0 var(--shadow);padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:2rem;color:var(--blue);font-variant-numeric:tabular-nums}
+body[data-style="mistrz"] .stat b{color:var(--yellow)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hist li{display:flex;justify-content:space-between;gap:8px;padding:8px 4px;border-bottom:2px dashed rgba(127,127,160,.3);font-variant-numeric:tabular-nums}
+.hist li:last-child{border:0}
+
+/* profiles */
+.profiles{display:flex;flex-direction:column;gap:10px}
+.prof{display:flex;align-items:center;gap:12px;background:var(--sheet);border-radius:var(--r);box-shadow:0 5px 0 var(--shadow);padding:10px 14px;text-align:left;width:100%}
+.prof b{font-family:var(--display);font-size:1.3rem;flex:1}
+.prof small{color:var(--muted)}
+.avatar{width:52px;height:52px;position:relative;display:grid;place-items:center;flex:none}
+.avatar svg{position:absolute;inset:0;width:100%;height:100%}
+.avatar span{position:relative;font-size:1.5rem}
+input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:1.2rem;padding:12px 14px;border-radius:14px;border:3px solid rgba(127,127,160,.4);background:transparent;color:var(--ink)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{background:rgba(127,127,160,.15);border-radius:14px;padding:8px 12px;font-weight:800;border:3px solid transparent}
+.choice[aria-pressed="true"]{border-color:var(--pink);background:rgba(255,79,163,.15)}
+.choice.emoji{font-size:1.6rem;padding:4px 8px}
+.label{font-weight:800;margin:4px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.78rem}
+.note{color:rgba(255,255,255,.85);font-size:.85rem;text-align:center}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+(function(){
+const ZOO_A=["🐸","🦊","🐻","🐼","🐨","🦁","🐯","🐰","🐶","🐱","🦄","🐙","🦉","🐧","🐢","🦋","🐳","🦒","🐘","🦔","🐞","🦜","🐿️","🦩"];
+const ZOO_N=["Żabka","Lisek","Miś","Panda","Koala","Lew","Tygrys","Królik","Piesek","Kotek","Jednorożec","Ośmiorniczka","Sowa","Pingwin","Żółwik","Motyl","Wieloryb","Żyrafa","Słoń","Jeżyk","Biedronka","Papuga","Wiewiórka","Flaming"];
+const PALETTES=[["#e8293f","#ffc928","#2f6cf6","#fff"],["#ff4fa3","#22c58b","#ffc928","#fff"],["#7b3fe4","#ff7a1a","#22c58b","#fff"],["#2f6cf6","#ff4fa3","#ffc928","#fff"],["#ff7a1a","#7b3fe4","#e8293f","#fff"],["#22c58b","#e8293f","#2f6cf6","#fff"]];
+const ZOO_P=["Brawo!","Super!","Ekstra!","Mistrz!","Tak trzymaj!","Wow!","Świetnie!","Bomba!"];
+const SPACE_A=["🌍","🌙","☀️","🪐","⭐","☄️","🌌","🚀","🛰️","🛸","👩‍🚀","🔭","🌑","🌕","🌠","💫","🪨","🌀","📡","⚛️","💎","🌋","🧑‍🚀","🌗"];
+const SPACE_N=["Ziemia","Księżyc","Słońce","Saturn","Gwiazda","Kometa","Droga Mleczna","Rakieta","Satelita","UFO","Astronautka","Teleskop","Nów","Pełnia","Spadająca gwiazda","Mgławica","Asteroida","Czarna dziura","Radioteleskop","Atom","Kosmiczny kryształ","Olympus Mons","Astronauta","Kwadra Księżyca"];
+const SPACE_P=["Czysto!","Kombo!","Bez pudła!","Mistrzowsko!","Level up!","Perfekcyjnie!","Tak jest!","Rakieta!"];
+const TXT={maluch:{zoo:"Moje zoo",count:"zwierzątek",pick:"Twoje zwierzątko",got:"Nowe zwierzątko w Twoim zoo",hint:"a w zoo zamieszka nowe zwierzątko",intro:"Każda świetna runda (8 na 10 albo rekord na czas) przynosi nowe zwierzątko. Zbierzesz wszystkie?"},
+ mistrz:{zoo:"Moja galaktyka",count:"odkryć",pick:"Twój znak",got:"Nowe odkrycie w Twojej galaktyce",hint:"a odkryjesz nowy obiekt w kosmosie",intro:"Każda świetna runda (8 na 10 albo rekord na czas) odkrywa nowy obiekt w kosmosie. Odkryjesz całą galaktykę?"}};
+const RANKS=["Kadet","Pilot","Nawigator","Kapitan","Komandor","Admirał galaktyki"];
+let ANIMALS=ZOO_A,NAMES=ZOO_N,PRAISE=ZOO_P,T=TXT.maluch;
+function useSet(st){const m=st==="mistrz";ANIMALS=m?SPACE_A:ZOO_A;NAMES=m?SPACE_N:ZOO_N;PRAISE=m?SPACE_P:ZOO_P;T=TXT[m?"mistrz":"maluch"]}
+/* older kids: neon hexagon badge instead of folk rosette */
+function hexBadge(i){
+  const p=PALETTES[i%PALETTES.length],h=(r,o)=>Array.from({length:6},(_,k)=>{const a=Math.PI/3*k+(o||0);return (50+Math.cos(a)*r).toFixed(1)+","+(50+Math.sin(a)*r).toFixed(1)}).join(" ");
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="${h(47,Math.PI/6)}" fill="${p[0]}"/><polygon points="${h(41,Math.PI/6)}" fill="#0d0d2b"/><polygon points="${h(41,0)}" fill="none" stroke="${p[1]}" stroke-width="2.5" opacity=".9"/><polygon points="${h(33,Math.PI/6)}" fill="none" stroke="${p[2]}" stroke-width="2"/></svg>`;
+}
+const KEY="wycinankowa-tabliczka-v1";
+/* ===== USTAWIENIA SPRZEDAŻY ===== */
+const SHOP_URL="https://buy.stripe.com/WKLEJ-TUTAJ";      // link płatności Stripe (Payment Link)
+const PRICE="9,90 zł";
+const FREE_MODES=["mul"];                                 // tryby dostępne za darmo
+const TRIAL_DAYS=7;                                       // ile dni działa wersja próbna
+const SALT="wt-2026-ludowa";                              // ten sam napis musi być w generator.html
+function h32(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h>>>0}
+const ABC="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function sig(body){let h=h32(body+SALT),o="";for(let i=0;i<4;i++){o+=ABC[h%32];h=Math.floor(h/32)}return o}
+function validCode(c){c=(c||"").toUpperCase().replace(/[^A-Z0-9]/g,"");return c.length===12&&[...c].every(ch=>ABC.includes(ch))&&sig(c.slice(0,8))===c.slice(8)}
+
+
+/* folk paper-cut rosette (wycinanka) as SVG */
+function rosette(i,petals,st){
+  if((st||document.body.dataset.style)==="mistrz")return hexBadge(i);
+  const p=PALETTES[i%PALETTES.length],n=petals||12;let s='<svg viewBox="0 0 100 100" aria-hidden="true">';
+  for(let k=0;k<n;k++){const a=k/n*Math.PI*2,x=50+Math.cos(a)*36,y=50+Math.sin(a)*36;s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="${p[0]}"/>`}
+  for(let k=0;k<n;k++){const a=(k+.5)/n*Math.PI*2,x=50+Math.cos(a)*30,y=50+Math.sin(a)*30;s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8" fill="${p[1]}"/>`}
+  s+=`<circle cx="50" cy="50" r="31" fill="${p[2]}"/><circle cx="50" cy="50" r="25" fill="${p[3]}"/>`;
+  for(let k=0;k<n;k++){const a=k/n*Math.PI*2,x=50+Math.cos(a)*28,y=50+Math.sin(a)*28;s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="${p[0]}"/>`}
+  return s+'</svg>';
+}
+
+/* ---------- storage ---------- */
+function blank(name,animal,style){return{id:Date.now()+""+Math.random().toString(36).slice(2,6),name,animal,style,facts:{},zoo:[],bestTimed:0,bestStreak:0,rounds:[]}}
+function sample(){
+  const p=blank("Przykład: Ola",5,"maluch");p.example=true;
+  for(let a=1;a<=10;a++)for(let b=a;b<=10;b++){if(a<=5||b<=3)p.facts[a+"x"+b]={c:a<=2?6:4,w:a*b>30?2:0};else if(a<=7&&b<=8)p.facts[a+"x"+b]={c:2,w:2}}
+  p.zoo=[0,1,5,7,13];p.bestTimed=17;p.bestStreak=12;
+  p.rounds=[{m:"Na czas",s:17,t:0,d:"10.11"},{m:"Mnożenie",s:9,t:10,d:"10.11"},{m:"Dzielenie",s:7,t:10,d:"09.11"}];
+  return p;
+}
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!db||!db.profiles){db={profiles:[],current:null}}
+
+if(!db.firstRun){db.firstRun=Date.now();save()}
+const isFull=()=>!!db.unlocked;
+const daysLeft=()=>Math.max(0,TRIAL_DAYS-Math.floor((Date.now()-db.firstRun)/864e5));
+const canPlay=m=>isFull()||(FREE_MODES.includes(m)&&daysLeft()>0);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+const me=()=>db.profiles.find(p=>p.id===db.current);
+
+/* ---------- facts & mastery ---------- */
+const fk=(a,b)=>Math.min(a,b)+"x"+Math.max(a,b);
+function level(p,a,b){const f=p.facts[fk(a,b)];if(!f)return 0;const v=f.c-f.w*1.5;return v<0?1:v<1.5?2:v<3?3:v<5?4:5}
+function pick(p){
+  const pool=[];for(let a=1;a<=10;a++)for(let b=1;b<=10;b++){const l=level(p,a,b);pool.push([a,b,[3,6,5,3,1.5,.6][l]])}
+  let t=pool.reduce((s,x)=>s+x[2],0)*Math.random();for(const x of pool){t-=x[2];if(t<=0)return x}return pool[0];
+}
+function makeQ(p,kind){
+  const [a,b]=pick(p);const k=kind==="mix"?(Math.random()<.5?"mul":"div"):kind;
+  return k==="mul"?{a,b,text:`${a} × ${b}`,ans:a*b,kind:"mul"}:{a,b,text:`${a*b} : ${a}`,ans:b,kind:"div"};
+}
+
+/* ---------- views ---------- */
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function avatar(p,size){return `<span class="avatar" style="${size?`width:${size}px;height:${size}px`:""}">${rosette(p.animal,10,p.style)}<span>${(p.style==="mistrz"?SPACE_A:ZOO_A)[p.animal]}</span></span>`}
+function setStyle(){const st=(me()&&me().style)||"maluch";document.body.dataset.style=st;useSet(st)}
+
+function vProfiles(){
+  document.body.dataset.style="maluch";useSet("maluch");
+  app.innerHTML=`<div class="top"><h1>Wycinankowa Tabliczka</h1></div>
+  <div class="scallop"></div><div class="sheet" style="margin-top:-1px">
+   <h2 style="font-size:1.5rem;margin-bottom:10px">Kto dziś gra?</h2>
+   <div class="profiles">${db.profiles.map(p=>`<button class="prof" data-id="${p.id}">${avatar(p)}<b>${esc(p.name)}</b><small>${p.zoo.length}/24 ${TXT[p.style==="mistrz"?"mistrz":"maluch"].count}</small></button>`).join("")}</div>
+  </div>
+  <button class="big" id="add">+ Nowy gracz</button>
+  <p class="note">Wyniki zapisują się na tym telefonie. Bez konta i bez reklam.</p>`;
+  app.querySelectorAll(".prof").forEach(b=>b.onclick=()=>{db.current=b.dataset.id;save();vHome()});
+  app.querySelector("#add").onclick=vNewProfile;
+}
+
+function vNewProfile(){
+  let animal=9,style="maluch";const PICK=[9,8,0,1,2,3,4,5,6,7,10,11,12,13,14,22];
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Nowy gracz</h1></div>
+  <div class="sheet" style="display:flex;flex-direction:column;gap:12px">
+   <div><div class="label">Imię</div><input type="text" id="pname" maxlength="16" placeholder="np. Kuba" autocomplete="off"></div>
+   <div><div class="label" id="anl">${T.pick}</div><div class="choices" id="an"></div></div>
+   <div><div class="label">Wygląd</div><div class="choices" id="st">
+     <button class="choice" aria-pressed="true" data-s="maluch">Maluch: zwierzątka, 6–9 lat</button>
+     <button class="choice" aria-pressed="false" data-s="mistrz">Mistrz: kosmos, rangi, 10–12 lat</button></div></div>
+   <button class="big" id="go">Zaczynamy!</button>
+  </div>`;
+  app.querySelector(".back").onclick=vProfiles;
+  const drawPick=()=>{const list=style==="mistrz"?[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]:PICK;if(!list.includes(animal))animal=list[0];
+    app.querySelector("#anl").textContent=T.pick;
+    app.querySelector("#an").innerHTML=list.map(i=>`<button class="choice emoji" aria-pressed="${i===animal}" data-i="${i}" aria-label="${NAMES[i]}">${ANIMALS[i]}</button>`).join("");
+    app.querySelectorAll("#an .choice").forEach(b=>b.onclick=()=>{animal=+b.dataset.i;app.querySelectorAll("#an .choice").forEach(x=>x.setAttribute("aria-pressed",x===b))});};
+  drawPick();
+  app.querySelectorAll("#st .choice").forEach(b=>b.onclick=()=>{style=b.dataset.s;document.body.dataset.style=style;useSet(style);drawPick();app.querySelectorAll("#st .choice").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  app.querySelector("#go").onclick=()=>{const n=app.querySelector("#pname").value.trim();if(!n){app.querySelector("#pname").focus();app.querySelector("#pname").classList.add("shake");return}
+    const p=blank(n,animal,style);db.profiles.push(p);db.current=p.id;save();vHome()};
+}
+
+function rank(p){let g=0;for(let r=1;r<=10;r++)for(let c=1;c<=10;c++)if(level(p,r,c)>=4)g++;return RANKS[Math.min(5,Math.floor(g/20))]}
+const lockTag=m=>canPlay(m)?"":"🔒 pełna wersja";
+function vHome(){
+  const p=me();setStyle();
+  app.innerHTML=`<div class="top"><h1>Cześć, ${esc(p.name.replace("Przykład: ",""))}!${p.style==="mistrz"?`<br><span class="rank">Ranga: ${rank(p)}</span>`:""}</h1><button class="who" id="sw">${avatar(p,36)}<span>Zmień</span></button></div>
+  <div class="modes">
+   <button class="mode" data-m="mul" style="background:var(--red)"><span class="sym">×</span><b>Mnożenie</b><small>10 pytań</small></button>
+   <button class="mode" data-m="div" style="background:var(--blue)"><span class="sym">:</span><b>Dzielenie</b><small>${lockTag("div")||"10 pytań"}</small></button>
+   <button class="mode" data-m="mix" style="background:var(--violet)"><span class="sym">±</span><b>Mieszane</b><small>${lockTag("mix")||"× i : razem"}</small></button>
+   <button class="mode" data-m="time" style="background:var(--orange)"><span class="sym">60</span><b>Na czas</b><small>${lockTag("time")||"Rekord: "+p.bestTimed}</small></button>
+  </div>
+  <div class="extras">
+   <button class="extra" id="zoo">${rosette(1,10)}${T.zoo}<small style="color:var(--muted)">${p.zoo.length}/24</small></button>
+   <button class="extra" id="map"><svg viewBox="0 0 46 46" aria-hidden="true">${[0,1,2,3].map(r=>[0,1,2,3].map(c=>`<rect x="${c*11+1}" y="${r*11+1}" width="9" height="9" rx="2" fill="${["#ff8a9a","#ffb36b","#ffe066","#5fdca8","#ffc928"][(r+c)%5]}"/>`).join("")).join("")}</svg>Mapa<small style="color:var(--muted)">mistrzostwa</small></button>
+   <button class="extra" id="rec"><svg viewBox="0 0 46 46" aria-hidden="true"><path d="M12 6h22v10a11 11 0 0 1-22 0z" fill="#ffc928"/><path d="M12 9H5a8 8 0 0 0 9 10M34 9h7a8 8 0 0 1-9 10" fill="none" stroke="#ff7a1a" stroke-width="3"/><rect x="19" y="27" width="8" height="7" fill="#ff7a1a"/><rect x="13" y="34" width="20" height="6" rx="2" fill="#e8293f"/></svg>Rekordy<small style="color:var(--muted)">seria ${p.bestStreak}</small></button>
+  </div>
+  ${p.example?'<p class="note">To przykładowy gracz z wypełnionymi wynikami. Dodaj własnego na ekranie „Zmień”.</p>':""}`;
+  app.querySelectorAll(".mode").forEach(b=>b.onclick=()=>play(b.dataset.m));
+  app.querySelector("#sw").onclick=vProfiles;
+  if(!isFull()){const u=document.createElement("button");u.className="big";u.textContent="Odblokuj wszystko za "+PRICE;u.onclick=vUnlock;app.appendChild(u);
+    const n=document.createElement("p");n.className="note";const d=daysLeft();n.textContent=d>0?`Wersja próbna: mnożenie za darmo jeszcze przez ${d} ${d===1?"dzień":"dni"}.`:"Wersja próbna się skończyła. Wpisz kod, żeby grać dalej.";app.appendChild(n)}
+  app.querySelector("#zoo").onclick=vZoo;app.querySelector("#map").onclick=vMap;app.querySelector("#rec").onclick=vRecords;
+}
+
+/* ---------- game ---------- */
+let G=null,timer=null;
+function play(mode){
+  if(!canPlay(mode))return vUnlock();
+  const p=me();
+  G={mode,kind:mode==="time"?"mix":mode,i:0,total:mode==="time"?Infinity:10,ok:0,streak:0,best:0,input:"",q:null,end:mode==="time"?Date.now()+60000:0,lock:false};
+  next();
+  if(mode==="time"){timer=setInterval(()=>{const left=Math.max(0,Math.ceil((G.end-Date.now())/1000));const el=document.getElementById("tl");if(el)el.textContent=left+" s";const bar=document.getElementById("bar");if(bar)bar.style.width=(left/60*100)+"%";if(left<=0)finish()},250)}
+}
+function next(){G.q=makeQ(me(),G.kind);G.input="";G.lock=false;vGame()}
+function vGame(){
+  const timed=G.mode==="time";
+  app.innerHTML=`<div class="hud"><button class="back" aria-label="Zakończ">←</button>
+   <div class="progress"><i id="bar" style="width:${timed?100:G.i/G.total*100}%"></i></div>
+   <span class="pill" id="tl">${timed?Math.max(0,Math.ceil((G.end-Date.now())/1000))+" s":(G.i+1)+"/10"}</span><span class="pill">★ ${G.ok}</span></div>
+  <div class="sheet q" id="qcard"><div class="expr">${G.q.text} = <span class="ans" id="ans">${G.input||"?"}</span></div>
+   ${G.streak>=3?`<div style="color:var(--orange);font-weight:800;margin-top:6px">Seria: ${G.streak} z rzędu!</div>`:""}</div>
+  <div class="keys">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key" data-k="${n}">${n}</button>`).join("")}
+   <button class="key del" data-k="del" aria-label="Usuń">⌫</button><button class="key" data-k="0">0</button><button class="key ok" data-k="ok">OK</button></div>`;
+  app.querySelector(".back").onclick=()=>{clearInterval(timer);vHome()};
+  app.querySelectorAll(".key").forEach(b=>b.onclick=()=>press(b.dataset.k));
+}
+function press(k){
+  if(!G||G.lock)return;
+  if(k==="del")G.input=G.input.slice(0,-1);
+  else if(k==="ok"){if(G.input)check();return}
+  else if(G.input.length<3)G.input+=k;
+  const a=document.getElementById("ans");if(a)a.textContent=G.input||"?";
+  if(G.input.length>=String(G.q.ans).length&&+G.input===G.q.ans)check();
+}
+document.addEventListener("keydown",e=>{if(!G||!document.getElementById("qcard"))return;if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("del");else if(e.key==="Enter")press("ok")});
+
+function check(){
+  const p=me(),q=G.q,good=+G.input===q.ans,key=fk(q.a,q.b);
+  p.facts[key]=p.facts[key]||{c:0,w:0};p.facts[key][good?"c":"w"]++;
+  G.lock=true;
+  if(good){G.ok++;G.streak++;G.best=Math.max(G.best,G.streak);showPop(G.mode==="time"?450:900,()=>advance())}
+  else{G.streak=0;document.getElementById("qcard").classList.add("shake");setTimeout(()=>vFamily(q),350)}
+  save();
+}
+function advance(){if(G.done)return;G.i++;if(G.mode!=="time"&&G.i>=G.total)finish();else if(G.mode==="time"&&Date.now()>=G.end)finish();else next()}
+function showPop(ms,cb){
+  const i=Math.floor(Math.random()*ANIMALS.length),d=document.createElement("div");d.className="pop";
+  d.innerHTML=`<div class="card"><div class="rosette" style="${G.mode==="time"?"width:120px;height:120px":""}">${rosette(i)}<span class="animal">${ANIMALS[i]}</span></div><div class="praise">${PRAISE[Math.floor(Math.random()*PRAISE.length)]}</div></div>`;
+  document.body.appendChild(d);setTimeout(()=>{d.remove();cb()},ms);
+}
+function vFamily(q){
+  const prod=q.a*q.b;
+  app.innerHTML=`<div class="top"><h1>Rodzina działań</h1></div>
+  <div class="sheet family">
+   <p>Prawie! Prawidłowa odpowiedź to <b style="color:var(--pink);font-size:1.4rem">${q.ans}</b></p>
+   <svg viewBox="0 0 200 170" aria-label="Trójkąt: ${prod} na górze, ${q.a} i ${q.b} na dole">
+     <path d="M100 10 L190 160 L10 160 Z" fill="var(--yellow)" stroke="var(--orange)" stroke-width="6" stroke-linejoin="round"/>
+     <text x="100" y="70" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="34" fill="#1d1b2e">${prod}</text>
+     <line x1="55" y1="100" x2="145" y2="100" stroke="#1d1b2e" stroke-width="3" stroke-dasharray="6 6"/>
+     <text x="65" y="145" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="30" fill="#e8293f">${q.a}</text>
+     <text x="100" y="142" text-anchor="middle" font-size="24" fill="#1d1b2e">×</text>
+     <text x="135" y="145" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="30" fill="#2f6cf6">${q.b}</text>
+   </svg>
+   <p><b>${q.a} × ${q.b} = ${prod}</b>, więc<br><b>${prod} : ${q.a} = ${q.b}</b> i <b>${prod} : ${q.b} = ${q.a}</b></p>
+   <p style="color:var(--muted);font-size:.95rem">To jedna rodzina. Znasz mnożenie, znasz też dzielenie!</p>
+   <button class="big" id="go">Dalej</button>
+  </div>`;
+  app.querySelector("#go").onclick=advance;
+  if(G.mode==="time")setTimeout(()=>{if(document.getElementById("go"))advance()},2600);
+}
+function finish(){
+  if(G.done)return;G.done=true;clearInterval(timer);const p=me(),timed=G.mode==="time";
+  const names={mul:"Mnożenie",div:"Dzielenie",mix:"Mieszane",time:"Na czas"};
+  let record=false;
+  if(timed&&G.ok>p.bestTimed){p.bestTimed=G.ok;record=true}
+  if(G.best>p.bestStreak){p.bestStreak=G.best;if(!timed)record=true}
+  const won=timed?(record||G.ok>=15):G.ok>=8;
+  let newAnimal=null;
+  if(won){const free=ANIMALS.map((_,i)=>i).filter(i=>!p.zoo.includes(i));if(free.length){newAnimal=free[Math.floor(Math.random()*free.length)];p.zoo.push(newAnimal)}}
+  const d=new Date();p.rounds.unshift({m:names[G.mode],s:G.ok,t:timed?0:10,d:String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")});p.rounds=p.rounds.slice(0,30);save();
+  const stars=timed?Math.min(3,Math.floor(G.ok/8)):G.ok>=10?3:G.ok>=8?2:G.ok>=5?1:0;
+  app.innerHTML=`<div class="sheet result">
+   ${record?'<div class="record">Nowy rekord!</div>':""}
+   <h2 style="font-size:1.6rem">${timed?"Koniec czasu!":G.ok>=8?"Wspaniale!":"Dobra robota!"}</h2>
+   <div class="score">${G.ok}${timed?"":"/10"}</div>
+   <div style="font-size:2.2rem;letter-spacing:4px" aria-label="${stars} z 3 gwiazdek">${"★".repeat(stars)}<span style="opacity:.25">${"★".repeat(3-stars)}</span></div>
+   <p style="margin:0;color:var(--muted)">${timed?`Twój rekord: ${p.bestTimed}. `:""}Najdłuższa seria: ${G.best}</p>
+   ${newAnimal!==null?`<div class="rosette" style="margin-top:6px">${rosette(newAnimal)}<span class="animal">${ANIMALS[newAnimal]}</span></div><p style="margin:0;font-weight:800">${T.got}: ${NAMES[newAnimal]}!</p>`:`<p style="margin:0">${timed?"Zdobądź 15 punktów albo pobij rekord":"Zdobądź 8 na 10"}, ${T.hint}.</p>`}
+  </div>
+  <button class="big" id="again">Jeszcze raz</button><button class="big alt" id="home">Menu</button>`;
+  app.querySelector("#again").onclick=()=>play(G.mode);app.querySelector("#home").onclick=vHome;
+  if(won||record)confetti();
+}
+
+/* ---------- zoo, map, records ---------- */
+function vZoo(){
+  const p=me();
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>${T.zoo}</h1><span class="pill" style="color:#fff">${p.zoo.length}/24</span></div>
+  <div class="sheet"><p style="margin:0 0 12px">${T.intro}</p>
+  <div class="zoo">${ANIMALS.map((a,i)=>p.zoo.includes(i)?`<div class="slot" title="${NAMES[i]}">${rosette(i,10)}<span>${a}</span></div>`:`<div class="slot locked"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="var(--muted)" stroke-width="4" stroke-dasharray="8 8"/></svg><span>${a}</span></div>`).join("")}</div></div>`;
+  app.querySelector(".back").onclick=vHome;
+}
+function vMap(){
+  const p=me();let cells='<div></div>';
+  for(let c=1;c<=10;c++)cells+=`<div class="h">${c}</div>`;
+  for(let r=1;r<=10;r++){cells+=`<div class="h">${r}</div>`;for(let c=1;c<=10;c++)cells+=`<div class="lv${level(p,r,c)}">${r*c}</div>`}
+  let gold=0;for(let r=1;r<=10;r++)for(let c=1;c<=10;c++)if(level(p,r,c)===5)gold++;
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Mapa mistrzostwa</h1></div>
+  <div class="sheet" style="display:flex;flex-direction:column;gap:12px">
+   <p style="margin:0">Złote pole to działanie, które znasz na pamięć. Masz już <b>${gold} ze 100</b>. Czerwone pola pojawiają się w grze częściej, żeby je poćwiczyć.</p>
+   <div class="mapwrap"><div class="map">${cells}</div></div>
+   <div class="legend"><span><i class="lv0"></i>jeszcze nie było</span><span><i class="lv1"></i>do poćwiczenia</span><span><i class="lv2"></i>prawie</span><span><i class="lv3"></i>dobrze</span><span><i class="lv4"></i>bardzo dobrze</span><span><i class="lv5"></i>mistrz</span></div>
+  </div>`;
+  app.querySelector(".back").onclick=vHome;
+}
+function vRecords(){
+  const p=me();
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Moje rekordy</h1></div>
+  <div class="stats"><div class="stat"><b>${p.bestTimed}</b>rekord na czas</div><div class="stat"><b>${p.bestStreak}</b>najdłuższa seria</div></div>
+  <div class="sheet"><h3 style="font-size:1.25rem;margin-bottom:6px">Ostatnie gry</h3>
+   ${p.rounds.length?`<ul class="hist">${p.rounds.slice(0,10).map(r=>`<li><span>${r.d} · ${r.m}</span><b>${r.s}${r.t?"/"+r.t:" pkt"}</b></li>`).join("")}</ul>`:'<p style="margin:0;color:var(--muted)">Zagraj pierwszą rundę, a tu pojawią się Twoje wyniki.</p>'}
+   <p style="margin:12px 0 0;font-weight:800;color:var(--pink)">Pobij swój rekord: zdobądź ${p.bestTimed+1} punktów w grze na czas!</p></div>`;
+  app.querySelector(".back").onclick=vHome;
+}
+
+/* ---------- confetti: paper-cut circles ---------- */
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cv=document.getElementById("confetti"),cx=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=["#e8293f","#ffc928","#2f6cf6","#ff4fa3","#22c58b","#7b3fe4","#ff7a1a"];
+  const ps=Array.from({length:110},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,r:4+Math.random()*7,vy:2+Math.random()*3,vx:-1+Math.random()*2,c:cols[Math.floor(Math.random()*cols.length)],p:Math.random()*6}));
+  let t=0;(function f(){cx.clearRect(0,0,cv.width,cv.height);ps.forEach(o=>{o.y+=o.vy;o.x+=o.vx+Math.sin(t/10+o.p);cx.fillStyle=o.c;cx.beginPath();cx.arc(o.x,o.y,o.r,0,7);cx.fill()});t++;if(t<200)requestAnimationFrame(f);else cx.clearRect(0,0,cv.width,cv.height)})();
+}
+
+function vUnlock(){
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Pełna wersja</h1></div>
+  <div class="sheet" style="display:flex;flex-direction:column;gap:12px">
+   <p style="margin:0;font-size:1.1rem">${daysLeft()>0?"Odblokuj dzielenie, tryb mieszany i grę na czas.":"Wersja próbna (7 dni) się skończyła. Odblokuj aplikację na zawsze: mnożenie, dzielenie, tryb mieszany i grę na czas."} <b>Jedna opłata ${PRICE}, na zawsze.</b> Bez reklam i bez abonamentu.</p>
+   <a class="big" style="text-align:center;text-decoration:none;box-sizing:border-box" href="${SHOP_URL}" target="_blank" rel="noopener">Kup kod za ${PRICE}</a>
+   <div><div class="label">Masz już kod?</div><input type="text" id="code" maxlength="16" placeholder="np. ABCD-EFGH-JKLM" autocomplete="off" autocapitalize="characters"></div>
+   <p id="msg" style="margin:0;min-height:1.4em;font-weight:800"></p>
+   <button class="big" id="use" style="background:var(--blue);color:#fff">Odblokuj</button>
+   <p style="margin:0;color:var(--muted);font-size:.9rem">Kod wpisujesz raz na każdym telefonie. Nie potrzebujesz konta ani internetu.</p>
+  </div>`;
+  app.querySelector(".back").onclick=()=>me()?vHome():vProfiles();
+  app.querySelector("#use").onclick=()=>{const c=app.querySelector("#code").value,m=app.querySelector("#msg");
+    if(validCode(c)){db.unlocked=c.toUpperCase();save();m.style.color="var(--mint)";m.textContent="Gotowe! Wszystko odblokowane.";confetti();setTimeout(()=>me()?vHome():vProfiles(),1400)}
+    else{m.style.color="var(--red)";m.textContent="Ten kod nie pasuje. Sprawdź litery i cyfry i spróbuj jeszcze raz."}};
+}
+/* Powrót ze Stripe: ?zaplacono={CHECKOUT_SESSION_ID} */
+function codeFrom(seed){let h=h32(seed),b="";for(let i=0;i<8;i++){b+=ABC[h%32];h=Math.floor(h/32)||h32(seed+i)}const c=b+sig(b);return c.slice(0,4)+"-"+c.slice(4,8)+"-"+c.slice(8)}
+function vPaid(code){
+  app.innerHTML=`<div class="sheet result">
+   <div class="record">Dziękujemy!</div>
+   <h2 style="font-size:1.6rem">Pełna wersja odblokowana</h2>
+   <p style="margin:0">Twój kod do pełnej wersji. Zapisz go albo zrób zdjęcie ekranu. Przyda się na drugim telefonie albo po wyczyszczeniu przeglądarki.</p>
+   <div class="score" style="font-size:1.9rem;letter-spacing:.06em;user-select:all">${code}</div>
+   <button class="big" id="cp">Kopiuj kod</button><p id="cpm" style="margin:0;min-height:1.2em"></p>
+  </div><button class="big alt" id="go">Graj!</button>`;
+  app.querySelector("#cp").onclick=()=>{const m=app.querySelector("#cpm");navigator.clipboard?navigator.clipboard.writeText(code).then(()=>m.textContent="Skopiowano.",()=>m.textContent="Zaznacz kod i skopiuj go ręcznie."):m.textContent="Zaznacz kod i skopiuj go ręcznie."};
+  app.querySelector("#go").onclick=()=>me()?vHome():vProfiles();
+  confetti();
+}
+const paid=new URLSearchParams(location.search).get("zaplacono");
+if(paid&&/^cs_(live|test)_[A-Za-z0-9]{10,}$/.test(paid)){
+  const code=codeFrom(paid);db.unlocked=code.replace(/-/g,"");save();
+  try{history.replaceState(null,"",location.pathname)}catch(e){}
+  vPaid(code);
+}else if(me())vHome();else vProfiles();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+
+</body>
+</html>
