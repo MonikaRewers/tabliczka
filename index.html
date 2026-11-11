@@ -295,6 +295,7 @@ function vHome(){
   ${p.example?'<p class="note">To przykładowy gracz z wypełnionymi wynikami. Dodaj własnego na ekranie „Zmień”.</p>':""}`;
   app.querySelectorAll(".mode").forEach(b=>b.onclick=()=>play(b.dataset.m));
   app.querySelector("#sw").onclick=vProfiles;
+  if(!isStandalone()){const ib=document.createElement("button");ib.className="big alt";ib.textContent="📲 Dodaj do ekranu głównego";ib.onclick=install;app.appendChild(ib)}
   if(!isFull()){const u=document.createElement("button");u.className="big";u.textContent="Odblokuj wszystko za "+PRICE;u.onclick=vUnlock;app.appendChild(u);
     const n=document.createElement("p");n.className="note";const d=daysLeft();n.textContent=d>0?`Wersja próbna: mnożenie za darmo jeszcze przez ${d} ${d===1?"dzień":"dni"}.`:"Wersja próbna się skończyła. Wpisz kod, żeby grać dalej.";app.appendChild(n)}
   app.querySelector("#zoo").onclick=vZoo;app.querySelector("#map").onclick=vMap;app.querySelector("#rec").onclick=vRecords;
@@ -465,6 +466,22 @@ if(paid&&/^cs_(live|test)_[A-Za-z0-9]{10,}$/.test(paid)){
   try{history.replaceState(null,"",location.pathname)}catch(e){}
   vPaid(code);
 }else if(me())vHome();else vProfiles();
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e});
+window.addEventListener("appinstalled",()=>{installEvt=null;if(me())vHome()});
+function isStandalone(){return (window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true}
+function install(){
+  if(installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null});return}
+  const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const steps=ios?[["1","Otwórz tę stronę w <b>Safari</b>."],["2","Stuknij przycisk <b>Udostępnij</b> (kwadrat ze strzałką w górę) na dole ekranu."],["3","Przewiń w dół i wybierz <b>Do ekranu początkowego</b>."],["4","Stuknij <b>Dodaj</b>. Ikona Tabliczki pojawi się na ekranie."]]
+   :[["1","Otwórz tę stronę w <b>Chrome</b>."],["2","Stuknij <b>⋮</b> (trzy kropki) w prawym górnym rogu."],["3","Wybierz <b>Zainstaluj aplikację</b> albo <b>Dodaj do ekranu głównego</b>."],["4","Potwierdź. Ikona Tabliczki pojawi się na ekranie."]];
+  app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Ikona na ekranie</h1></div>
+  <div class="sheet" style="display:flex;flex-direction:column;gap:14px">
+   <p style="margin:0;font-size:1.1rem">Dodaj Tabliczkę do ekranu głównego, a będzie się otwierać jak zwykła aplikacja, także bez internetu.</p>
+   ${steps.map(s=>`<div style="display:flex;gap:12px;align-items:flex-start"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:var(--yellow);color:#1d1b2e;display:grid;place-items:center;font-family:var(--display);font-weight:800">${s[0]}</span><p style="margin:4px 0 0;font-size:1.05rem">${s[1]}</p></div>`).join("")}
+   <button class="big" id="ok">Rozumiem</button></div>`;
+  const back=()=>me()?vHome():vProfiles();app.querySelector(".back").onclick=back;app.querySelector("#ok").onclick=back;
+}
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();
 </script>
