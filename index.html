@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tabliczka">
+<meta name="author" content="2026@mrevers">
 <meta name="description" content="Nauka tabliczki mnożenia i dzielenia dla dzieci 6–12 lat.">
 <title>Wycinankowa Tabliczka</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,6 +150,7 @@ input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:1.2rem;
 .choice.emoji{font-size:1.6rem;padding:4px 8px}
 .label{font-weight:800;margin:4px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.78rem}
 .note{color:rgba(255,255,255,.85);font-size:.85rem;text-align:center}
+#sig{text-align:center;font-family:var(--body);font-weight:800;font-size:.8rem;letter-spacing:.06em;color:rgba(255,255,255,.7);padding:0 16px max(14px,env(safe-area-inset-bottom,0px))}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -156,6 +158,7 @@ input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:1.2rem;
 </head>
 <body>
 <div id="app"></div>
+<footer id="sig">2026@mrevers</footer>
 <canvas id="confetti"></canvas>
 
 <script>
