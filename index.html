@@ -150,6 +150,8 @@ input[type=text]{width:100%;box-sizing:border-box;font:inherit;font-size:1.2rem;
 .choice.emoji{font-size:1.6rem;padding:4px 8px}
 .label{font-weight:800;margin:4px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.78rem}
 .note{color:rgba(255,255,255,.85);font-size:.85rem;text-align:center}
+.promo{background:var(--yellow);color:#1d1b2e;border-radius:var(--r);box-shadow:0 5px 0 var(--shadow);padding:12px 16px;font-size:.98rem;line-height:1.3;text-align:center;margin-bottom:12px}
+.promo b{display:block;font-family:var(--display);font-size:1.3rem}
 #sig{text-align:center;font-family:var(--body);font-weight:800;font-size:.8rem;letter-spacing:.06em;color:rgba(255,255,255,.7);padding:0 16px max(14px,env(safe-area-inset-bottom,0px))}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -186,6 +188,11 @@ const SHOP_URL="https://buy.stripe.com/6oUeV6e2p6kF5jVc9Z5gc02";      // link p�
 const PRICE="9,90 zł";
 const FREE_MODES=["mul"];                                 // tryby dostępne za darmo
 const TRIAL_DAYS=7;                                       // ile dni działa wersja próbna
+/* Promocja: Międzynarodowy Dzień Tabliczki Mnożenia. Cała aplikacja za darmo 20–26 listopada 2026 (czas polski). */
+const PROMO_START=new Date("2026-11-20T00:00:00+01:00").getTime();
+const PROMO_END=new Date("2026-11-27T00:00:00+01:00").getTime();   // koniec: 26.11 o północy
+const promoOn=()=>Date.now()>=PROMO_START&&Date.now()<PROMO_END;
+const promoSoon=()=>Date.now()<PROMO_START&&PROMO_START-Date.now()<14*864e5;
 const SALT="wt-2026-ludowa";                              // ten sam napis musi być w generator.html
 function h32(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h>>>0}
 const ABC="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -220,7 +227,7 @@ if(!db||!db.profiles){db={profiles:[],current:null}}
 if(!db.firstRun){db.firstRun=Date.now();save()}
 const isFull=()=>!!db.unlocked;
 const daysLeft=()=>Math.max(0,TRIAL_DAYS-Math.floor((Date.now()-db.firstRun)/864e5));
-const canPlay=m=>isFull()||(FREE_MODES.includes(m)&&daysLeft()>0);
+const canPlay=m=>isFull()||promoOn()||(FREE_MODES.includes(m)&&daysLeft()>0);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
 const me=()=>db.profiles.find(p=>p.id===db.current);
 
@@ -297,7 +304,13 @@ function vHome(){
   app.querySelectorAll(".mode").forEach(b=>b.onclick=()=>play(b.dataset.m));
   app.querySelector("#sw").onclick=vProfiles;
   if(!isStandalone()){const ib=document.createElement("button");ib.className="big alt";ib.textContent="📲 Dodaj do ekranu głównego";ib.onclick=install;app.appendChild(ib)}
-  if(!isFull()){const u=document.createElement("button");u.className="big";u.textContent="Odblokuj wszystko za "+PRICE;u.onclick=vUnlock;app.appendChild(u);
+  if(!isFull()&&promoOn()){const b=document.createElement("div");b.className="promo";
+    const dl=Math.max(1,Math.ceil((PROMO_END-Date.now())/864e5));
+    b.innerHTML=`<b>🎉 Dzień Tabliczki Mnożenia!</b>Cała aplikacja za darmo do 26 listopada: dzielenie, mieszane i gra na czas. Zostało ${dl} ${dl===1?"dzień":"dni"}.`;
+    app.querySelector(".modes").before(b);
+    const u=document.createElement("button");u.className="big alt";u.textContent="Zostaw na zawsze za "+PRICE;u.onclick=vUnlock;app.appendChild(u);
+  }else if(!isFull()){const u=document.createElement("button");u.className="big";u.textContent="Odblokuj wszystko za "+PRICE;u.onclick=vUnlock;app.appendChild(u);
+    if(promoSoon()){const b=document.createElement("p");b.className="note";b.innerHTML="🎉 <b>20 listopada: Dzień Tabliczki Mnożenia.</b> Od 20 do 26 listopada cała aplikacja za darmo!";app.appendChild(b)}
     const n=document.createElement("p");n.className="note";const d=daysLeft();n.textContent=d>0?`Wersja próbna: mnożenie za darmo jeszcze przez ${d} ${d===1?"dzień":"dni"}.`:"Wersja próbna się skończyła. Wpisz kod, żeby grać dalej.";app.appendChild(n)}
   app.querySelector("#zoo").onclick=vZoo;app.querySelector("#map").onclick=vMap;app.querySelector("#rec").onclick=vRecords;
 }
@@ -435,7 +448,7 @@ function confetti(){
 function vUnlock(){
   app.innerHTML=`<div class="top"><button class="back" aria-label="Wróć">←</button><h1>Pełna wersja</h1></div>
   <div class="sheet" style="display:flex;flex-direction:column;gap:12px">
-   <p style="margin:0;font-size:1.1rem">${daysLeft()>0?"Odblokuj dzielenie, tryb mieszany i grę na czas.":"Wersja próbna (7 dni) się skończyła. Odblokuj aplikację na zawsze: mnożenie, dzielenie, tryb mieszany i grę na czas."} <b>Jedna opłata ${PRICE}, na zawsze.</b> Bez reklam i bez abonamentu.</p>
+   <p style="margin:0;font-size:1.1rem">${promoOn()?"Do 26 listopada cała aplikacja jest za darmo z okazji Dnia Tabliczki Mnożenia. Kup kod, żeby zostawić ją na zawsze.":daysLeft()>0?"Odblokuj dzielenie, tryb mieszany i grę na czas.":"Wersja próbna (7 dni) się skończyła. Odblokuj aplikację na zawsze: mnożenie, dzielenie, tryb mieszany i grę na czas."} <b>Jedna opłata ${PRICE}, na zawsze.</b> Bez reklam i bez abonamentu.</p>
    <a class="big" style="text-align:center;text-decoration:none;box-sizing:border-box" href="${SHOP_URL}" target="_blank" rel="noopener">Kup kod za ${PRICE}</a>
    <div><div class="label">Masz już kod?</div><input type="text" id="code" maxlength="16" placeholder="np. ABCD-EFGH-JKLM" autocomplete="off" autocapitalize="characters"></div>
    <p id="msg" style="margin:0;min-height:1.4em;font-weight:800"></p>

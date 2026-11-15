@@ -1,6 +1,6 @@
 // Działanie bez internetu. Strona (HTML) zawsze najpierw z internetu, żeby zmiany były widoczne od razu;
 // bez internetu — z pamięci telefonu. Po zmianie plików podnieś numer wersji.
-const CACHE = "tabliczka-v9";
+const CACHE = "tabliczka-v10";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x))))); self.clients.claim(); });
